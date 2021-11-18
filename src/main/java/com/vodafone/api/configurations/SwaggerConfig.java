@@ -16,7 +16,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2).useDefaultResponseMessages(false).select()
-				.apis(RequestHandlerSelectors.basePackage("it.coreview.api.controllers")).paths(PathSelectors.any())
+				.apis(RequestHandlerSelectors.basePackage("com.vodafone.api.controllers")).paths(PathSelectors.any())
 				.build();
 	}
 }

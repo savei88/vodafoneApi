@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VodafoneApplication {
+public class VodafoneApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VodafoneApplication.class, args);
+		SpringApplication.run(VodafoneApiApplication.class, args);
 	}
 
 }
