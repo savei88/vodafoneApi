@@ -168,7 +168,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		return nationalIdentifier;
 	}
 
-	private static String formatLastName(String lastName) {
+	public static String formatLastName(String lastName) {
 		String formattedLastName = "";
 		List<Character> stringVowels = new ArrayList<>();
 		for (int i = 0; i < lastName.length(); i++) {
@@ -194,7 +194,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		return String.format("%-3s", formattedLastName).replace(' ', 'X');
 	}
 
-	private static String formatFirstName(String firstName) {
+	public static String formatFirstName(String firstName) {
 		String formattedFirstName = "";
 		Character secondConsonant = null;
 		List<Character> stringVowels = new ArrayList<>();
