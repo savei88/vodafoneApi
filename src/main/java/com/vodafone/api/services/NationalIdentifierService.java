@@ -16,6 +16,7 @@ import com.vodafone.api.dtos.CalculateNationalIdentifierInputDTO;
 import com.vodafone.api.dtos.NationalIdentifierDataDTO;
 import com.vodafone.api.dtos.NationalIdentifierValidationDTO;
 import com.vodafone.api.entities.City;
+import com.vodafone.api.exceptions.UnprocessableEntityException;
 import com.vodafone.api.mappers.CityMapper;
 import com.vodafone.api.repositories.CityRepository;
 import com.vodafone.api.utils.*;
@@ -137,7 +138,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 	}
 
 	@Override
-	public String calculateNationalIdentifier(CalculateNationalIdentifierInputDTO input) throws Exception {
+	public String calculateNationalIdentifier(CalculateNationalIdentifierInputDTO input) throws UnprocessableEntityException {
 
 		String nationalIdentifier = "";
 
@@ -153,7 +154,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		if (!cities.isEmpty()) {
 			nationalIdentifier += cities.get(0).getCadastralCode().toUpperCase();
 		} else {
-			throw new Exception("City not found");
+			throw new UnprocessableEntityException("City not found");
 		}
 		
 		int total = 0;

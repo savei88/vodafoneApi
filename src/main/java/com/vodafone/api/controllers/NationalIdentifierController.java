@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vodafone.api.dtos.CalculateNationalIdentifierInputDTO;
 import com.vodafone.api.dtos.NationalIdentifierValidationDTO;
+import com.vodafone.api.exceptions.UnprocessableEntityException;
 import com.vodafone.api.services.INationalIdentifierService;
 
 import io.swagger.annotations.ApiOperation;
@@ -39,10 +40,11 @@ public class NationalIdentifierController {
 	}
 
 	@ApiOperation(value = "calculateNationalIdentifier", response = String.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Calculated nationalIdentifier") })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Calculated nationalIdentifier"), 
+			 @ApiResponse(code = 422, message = "BirthCity not found")})
 	@PostMapping("/calculate")
 	public String calculateNationalIdentifier(
-			@RequestBody(required = true) @Valid CalculateNationalIdentifierInputDTO input) throws Exception {
+			@RequestBody(required = true) @Valid CalculateNationalIdentifierInputDTO input) throws UnprocessableEntityException {
 		return nationalIdentifierService.calculateNationalIdentifier(input);
 	}
 
