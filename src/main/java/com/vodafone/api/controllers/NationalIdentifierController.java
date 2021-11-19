@@ -3,9 +3,12 @@ package com.vodafone.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vodafone.api.dtos.CalculateNationalIdentifierInputDTO;
 import com.vodafone.api.dtos.NationalIdentifierValidationDTO;
 import com.vodafone.api.services.INationalIdentifierService;
 
@@ -25,12 +28,19 @@ public class NationalIdentifierController {
 		this.nationalIdentifierService = nationalIdentifierService;
 	}
 
-	@ApiOperation(value = "checkNationalCode", response = NationalIdentifierValidationDTO.class)
+	@ApiOperation(value = "checkNationalIdentifier", response = NationalIdentifierValidationDTO.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "NationalIdentifier verified") })
 	@GetMapping("/check/{nationalIdentifier}")
-	public NationalIdentifierValidationDTO getDiscount(@ApiParam(name = "nationalIdentifier", value = "National identifier")
+	public NationalIdentifierValidationDTO checkNationalIdentifier(@ApiParam(name = "nationalIdentifier", value = "National identifier")
 	@PathVariable String nationalIdentifier) {
 		return nationalIdentifierService.checkNationalIdentifier(nationalIdentifier);
+	}
+	
+	@ApiOperation(value = "calculateNationalIdentifier", response = String.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Calculated nationalIdentifier") })
+	@PostMapping("/calculate")
+	public String calculateNationalIdentifier(@RequestBody(required = true) CalculateNationalIdentifierInputDTO input) throws Exception {
+		return nationalIdentifierService.calculateNationalIdentifier(input);
 	}
 
 }

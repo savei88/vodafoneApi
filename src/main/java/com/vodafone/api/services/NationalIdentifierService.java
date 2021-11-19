@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vodafone.api.dtos.CalculateNationalIdentifierInputDTO;
 import com.vodafone.api.dtos.NationalIdentifierDataDTO;
 import com.vodafone.api.dtos.NationalIdentifierValidationDTO;
 import com.vodafone.api.entities.City;
@@ -38,7 +39,9 @@ public class NationalIdentifierService implements INationalIdentifierService {
 				+ Constants.valueOmocodiaLetterMap.values().stream().map(x -> String.valueOf(x)).collect(Collectors.joining())
 				+ "]";
 
-		if (nationalIdentifier == null || (nationalIdentifier.length() != 16 && nationalIdentifier.length() != 11)) {
+		if (nationalIdentifier == null || (nationalIdentifier.length() != 16 
+				//&& nationalIdentifier.length() != 11
+				)) {
 			return NationalIdentifierValidationDTO.fail();
 		}
 		
@@ -134,18 +137,26 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		return NationalIdentifierValidationDTO.success(data);
 	}
 
-	public static String createnationalIdentifier(String lastName, String firstName, boolean male, LocalDate birthDate,
-			String city) {
+	@Override
+	public String calculateNationalIdentifier(CalculateNationalIdentifierInputDTO input) throws Exception {
 
 		String nationalIdentifier = "";
 
-		nationalIdentifier += formatLastName(lastName);
-		nationalIdentifier += formatFirstName(firstName);
-		nationalIdentifier += String.valueOf(birthDate.getYear()).substring(2);
-		nationalIdentifier += Constants.letterMonthMap.entrySet().stream().filter(x -> x.getValue() == birthDate.getMonthValue())
+		nationalIdentifier += formatLastName(input.getLastName().toUpperCase());
+		nationalIdentifier += formatFirstName(input.getFirstName().toUpperCase());
+		nationalIdentifier += String.valueOf(input.getBirthDate().getYear()).substring(2);
+		nationalIdentifier += Constants.letterMonthMap.entrySet().stream().filter(x -> x.getValue() == input.getBirthDate().getMonthValue())
 				.map(Entry::getKey).findFirst().get();
-		nationalIdentifier += birthDate.getDayOfMonth() + (male ? 0 : 30);
-		nationalIdentifier += "E017";
+		nationalIdentifier += input.getBirthDate().getDayOfMonth() + (input.isMale() ? 0 : 30);
+		
+		List<City> cities = cityRepository.findByName(input.getBirthCity());
+		
+		if (!cities.isEmpty()) {
+			nationalIdentifier += cities.get(0).getCadastralCode().toUpperCase();
+		} else {
+			throw new Exception("City not found");
+		}
+		
 		int total = 0;
 		for (int i = 0; i < nationalIdentifier.length(); i++) {
 			Character symbol = nationalIdentifier.charAt(i);
