@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 public class City {
 	
 	@Id
-	@Column(name = "postal_code", nullable = false)
-	private String postalCode;
+	@Column(name = "identifier", nullable = false)
+	private String identifier;
 	
 	@Column(name = "name", nullable = false)
 	private String name;

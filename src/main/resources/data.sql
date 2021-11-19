@@ -1,4 +1,4 @@
-INSERT INTO tbl_city (postal_code, name, province, cadastral_code) VALUES('001001', 'Agliè', 'TO', 'A074'),
+INSERT INTO tbl_city (identifier, name, province, cadastral_code) VALUES('001001', 'Agliè', 'TO', 'A074'),
 ('001002', 'Airasca', 'TO', 'A109'),
 ('001003', 'Ala di Stura', 'TO', 'A117'),
 ('001004', 'Albiano d''Ivrea', 'TO', 'A157'),

@@ -9,5 +9,5 @@ public class CityDTO {
 
 	private String name;
 	private String province;
-	private String postalCode;
+	private String identifier;
 }

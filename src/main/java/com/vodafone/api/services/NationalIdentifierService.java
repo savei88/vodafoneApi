@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -128,7 +127,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		if (!Constants.valueCheckDigitMap.get(total % 26).equals(checkDigit)) {
 			return NationalIdentifierValidationDTO.fail();
 		}
-		
+				
 		NationalIdentifierDataDTO data = new NationalIdentifierDataDTO();
 		data.setBirthDate(birthDate);
 		data.setMale(male);

@@ -2,11 +2,12 @@ package com.vodafone.api.dtos;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class NationalIdentifierValidationDTO {
 	
 	private boolean valid;
