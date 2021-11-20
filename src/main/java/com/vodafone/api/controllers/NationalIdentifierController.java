@@ -40,11 +40,12 @@ public class NationalIdentifierController {
 	}
 
 	@ApiOperation(value = "calculateNationalIdentifier", response = String.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Calculated nationalIdentifier"), 
-			 @ApiResponse(code = 422, message = "BirthCity not found")})
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Calculated nationalIdentifier"),
+			@ApiResponse(code = 422, message = "BirthCity not found") })
 	@PostMapping("/calculate")
 	public String calculateNationalIdentifier(
-			@RequestBody(required = true) @Valid CalculateNationalIdentifierInputDTO input) throws UnprocessableEntityException {
+			@ApiParam(name = "input", value = "Data to calculate national identifier") @RequestBody(required = true) @Valid CalculateNationalIdentifierInputDTO input)
+			throws UnprocessableEntityException {
 		return nationalIdentifierService.calculateNationalIdentifier(input);
 	}
 
