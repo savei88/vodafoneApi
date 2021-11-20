@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.vodafone.api.dtos.CalculateNationalIdentifierInputDTO;
@@ -117,10 +116,10 @@ public class NationalIdentifierServiceTests {
 		dto.setIdentifier(city.getIdentifier());
 		dto.setName(city.getName());
 		dto.setProvince(city.getProvince());
-		Mockito.when(cityRepository.findByName("Roma")).thenReturn(Arrays.asList(city));
+		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RO")).thenReturn(Arrays.asList(city));
 		Mockito.when(cityMapper.entityToDTO(city)).thenReturn(dto);
 		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
-				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma");
+				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RO");
 		String result = nationalIdentifierService.calculateNationalIdentifier(input);
 		assertEquals(rightNationalIdentifier, result);
 	}
@@ -128,9 +127,9 @@ public class NationalIdentifierServiceTests {
 	@Test
 	void calculateNationalIdentifierWhenCityWrongThrowsException() {
 		
-		Mockito.when(cityRepository.findByName("Roma")).thenReturn(Arrays.asList());
+		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RO")).thenReturn(Arrays.asList());
 		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
-				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma");
+				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RO");
 		UnprocessableEntityException ex = assertThrows(UnprocessableEntityException.class, 
 				() -> nationalIdentifierService.calculateNationalIdentifier(input));
 		assertEquals("City not found", ex.getMessage());

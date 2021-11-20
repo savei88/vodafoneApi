@@ -90,8 +90,10 @@ public class NationalIdentifierService implements INationalIdentifierService {
 
 		LocalDate birthDate;
 		try {
-			birthDate = LocalDate.parse(String.valueOf(localYear).substring(0, 2) + String.format("%02d",year) + "-"
-					+ String.format("%02d", month) + "-" + String.format("%02d", day), DateTimeFormatter.ISO_DATE);
+			birthDate = LocalDate.parse(
+					String.valueOf(localYear).substring(0, 2) + String.format("%02d", year) + "-"
+							+ String.format("%02d", month) + "-" + String.format("%02d", day),
+					DateTimeFormatter.ISO_DATE);
 		} catch (Exception ex) {
 			logger.error("Error parsing date");
 			return NationalIdentifierValidationDTO.fail();
@@ -158,12 +160,13 @@ public class NationalIdentifierService implements INationalIdentifierService {
 				.filter(x -> x.getValue() == input.getBirthDate().getMonthValue()).map(Entry::getKey).findFirst().get();
 		nationalIdentifier += String.format("%02d", input.getBirthDate().getDayOfMonth() + (input.isMale() ? 0 : 30));
 
-		List<City> cities = cityRepository.findByName(input.getBirthCity());
+		List<City> cities = cityRepository.findByNameAndProvince(input.getBirthCity(), input.getProvince());
 
 		if (!cities.isEmpty()) {
 			nationalIdentifier += cities.get(0).getCadastralCode().toUpperCase();
 		} else {
-			logger.error("City with cadastralCode:" + input.getBirthCity() + " not found");
+			logger.error(
+					"City with name:" + input.getBirthCity() + " and province: " + input.getProvince() + " not found");
 			throw new UnprocessableEntityException("City not found");
 		}
 

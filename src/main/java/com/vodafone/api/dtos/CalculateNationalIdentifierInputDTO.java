@@ -29,4 +29,7 @@ public class CalculateNationalIdentifierInputDTO {
 	@NotBlank(message = "Missing bithCity")
 	@ApiModelProperty(value = "Birth city name")
 	private String birthCity;
+	@NotBlank(message = "Missing province")
+	@ApiModelProperty(value = "Province abbreviation of birth city")
+	private String province;
 }

@@ -17,7 +17,7 @@ public interface CityRepository extends CrudRepository<City, String> {
 	
 	public List<City> findByCadastralCode(String cadastralCode);
 	
-	@Query("SELECT c FROM City c WHERE UPPER(c.name) = UPPER(:name)")
-	public List<City> findByName(String name);
+	@Query("SELECT c FROM City c WHERE UPPER(c.name) = UPPER(:name) AND UPPER(c.province) = UPPER(:province)")
+	public List<City> findByNameAndProvince(String name, String province);
 
 }
