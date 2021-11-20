@@ -29,11 +29,7 @@ public class NationalIdentifierControllerTests {
 
 	@Test
 	void checkNationalIdentifier() {
-		City city = new City();
-		city.setCadastralCode("H501");
-		city.setIdentifier("XXX");
-		city.setName("ROMA");
-		city.setProvince("RO");
+		City city = new City("XXX","ROMA", "RM", "H501");
 		Mockito.when(cityRepository.findByCadastralCode("H501")).thenReturn(Arrays.asList(city));
 
 		NationalIdentifierValidationDTO result = nationalIdentifierController
@@ -44,16 +40,12 @@ public class NationalIdentifierControllerTests {
 
 	@Test
 	void calculateNationalIdentifier() {
-		City city = new City();
-		city.setCadastralCode("H501");
-		city.setIdentifier("XXX");
-		city.setName("ROMA");
-		city.setProvince("RO");
-		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RO")).thenReturn(Arrays.asList(city));
+		City city = new City("XXX","ROMA", "RM", "H501");
+		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RM")).thenReturn(Arrays.asList(city));
 
 		String result = nationalIdentifierController
 				.calculateNationalIdentifier(new CalculateNationalIdentifierInputDTO("PROVA", "PROVA", true,
-						LocalDate.parse("1980-01-01"), "Roma", "RO"));
+						LocalDate.parse("1980-01-01"), "Roma", "RM"));
 
 		assertEquals(rightNationalIdentifier, result);
 	}

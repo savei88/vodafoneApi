@@ -87,15 +87,8 @@ public class NationalIdentifierServiceTests {
 	
 	@Test
 	void checkNationalIdentifierWhenRightReturnValidData() {
-		City city = new City();
-		city.setCadastralCode("H501");
-		city.setIdentifier("XXX");
-		city.setName("ROMA");
-		city.setProvince("RO");
-		CityDTO dto = new CityDTO();
-		dto.setIdentifier(city.getIdentifier());
-		dto.setName(city.getName());
-		dto.setProvince(city.getProvince());
+		City city = new City("XXX","ROMA", "RM", "H501");
+		CityDTO dto = new CityDTO(city.getName(), city.getProvince(), city.getCadastralCode());
 		Mockito.when(cityRepository.findByCadastralCode("H501")).thenReturn(Arrays.asList(city));
 		Mockito.when(cityMapper.entityToDTO(city)).thenReturn(dto);
 		NationalIdentifierValidationDTO result = nationalIdentifierService.checkNationalIdentifier(rightNationalIdentifier);
@@ -107,19 +100,12 @@ public class NationalIdentifierServiceTests {
 	
 	@Test
 	void calculateNationalIdentifierWhenCityRightReturnValidData() {
-		City city = new City();
-		city.setCadastralCode("H501");
-		city.setIdentifier("XXX");
-		city.setName("ROMA");
-		city.setProvince("RO");
-		CityDTO dto = new CityDTO();
-		dto.setIdentifier(city.getIdentifier());
-		dto.setName(city.getName());
-		dto.setProvince(city.getProvince());
-		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RO")).thenReturn(Arrays.asList(city));
+		City city = new City("XXX","ROMA", "RM", "H501");
+		CityDTO dto = new CityDTO(city.getName(), city.getProvince(), city.getCadastralCode());
+		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RM")).thenReturn(Arrays.asList(city));
 		Mockito.when(cityMapper.entityToDTO(city)).thenReturn(dto);
 		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
-				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RO");
+				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RM");
 		String result = nationalIdentifierService.calculateNationalIdentifier(input);
 		assertEquals(rightNationalIdentifier, result);
 	}
@@ -127,9 +113,9 @@ public class NationalIdentifierServiceTests {
 	@Test
 	void calculateNationalIdentifierWhenCityWrongThrowsException() {
 		
-		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RO")).thenReturn(Arrays.asList());
+		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RM")).thenReturn(Arrays.asList());
 		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
-				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RO");
+				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RM");
 		UnprocessableEntityException ex = assertThrows(UnprocessableEntityException.class, 
 				() -> nationalIdentifierService.calculateNationalIdentifier(input));
 		assertEquals("City not found", ex.getMessage());

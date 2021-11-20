@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel(description = "Data calculated from nationalIdentifier")
 public class NationalIdentifierDataDTO {
-	@ApiModelProperty(value = "Birthdate in format YYYY-MM-DD")
+	@ApiModelProperty(value = "Birthdate in format YYYY-MM-DD", example = "1980-01-01")
 	private LocalDate birthDate;
-	@ApiModelProperty(value = "Sex")
+	@ApiModelProperty(value = "Sex", example = "true")
 	private boolean male;
 	private CityDTO birthCity;
 }

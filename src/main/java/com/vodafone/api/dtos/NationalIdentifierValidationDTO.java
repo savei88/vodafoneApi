@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ApiModel(description = "Response of nationalIdentifier validation")
 public class NationalIdentifierValidationDTO {
-	@ApiModelProperty(value = "Indicate if nationalIdentifier is valid")
+	@ApiModelProperty(value = "Indicate if nationalIdentifier is valid", example = "true")
 	private boolean valid;
 	private NationalIdentifierDataDTO data;
 	
