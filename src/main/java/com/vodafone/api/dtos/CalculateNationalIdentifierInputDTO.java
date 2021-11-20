@@ -7,10 +7,12 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @ApiModel(description = "Data to calculate national identifier")
+@AllArgsConstructor
 public class CalculateNationalIdentifierInputDTO {
 	@NotBlank(message = "Missing firstName")
 	@ApiModelProperty(value = "FirstName")
