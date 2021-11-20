@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +25,12 @@ import com.vodafone.api.utils.*;
 
 @Service
 public class NationalIdentifierService implements INationalIdentifierService {
-	
+
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private CityRepository cityRepository;
 	private CityMapper cityMapper;
-	
+
 	@Autowired
 	public NationalIdentifierService(CityRepository cityRepository, CityMapper cityMapper) {
 		this.cityRepository = cityRepository;
@@ -35,18 +39,17 @@ public class NationalIdentifierService implements INationalIdentifierService {
 
 	@Override
 	public NationalIdentifierValidationDTO checkNationalIdentifier(String nationalIdentifier) {
-		String digitOmocodiaLettersRegEx = "[0-9"
-				+ Constants.valueOmocodiaLetterMap.values().stream().map(x -> String.valueOf(x)).collect(Collectors.joining())
-				+ "]";
+		String digitOmocodiaLettersRegEx = "[0-9" + Constants.valueOmocodiaLetterMap.values().stream()
+				.map(x -> String.valueOf(x)).collect(Collectors.joining()) + "]";
 
-		if (nationalIdentifier == null || (nationalIdentifier.length() != 16 
-				//&& nationalIdentifier.length() != 11
-				)) {
+		if (nationalIdentifier == null || (nationalIdentifier.length() != 16
+		// && nationalIdentifier.length() != 11
+		)) {
 			return NationalIdentifierValidationDTO.fail();
 		}
-		
+
 		nationalIdentifier = nationalIdentifier.toUpperCase();
-		
+
 		if (!nationalIdentifier.substring(0, 3).matches("[A-Z]{3}")) {
 			return NationalIdentifierValidationDTO.fail();
 		}
@@ -80,13 +83,19 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		boolean male = true;
 		if (day >= 40) {
 			male = false;
+			day -= 30;
 		}
 
 		int localYear = LocalDate.now().getYear();
 
-		LocalDate birthDate = LocalDate.parse(
-				String.valueOf(localYear).substring(0, 2) + year + "-" + String.format("%02d", month) + "-" + day,
-				DateTimeFormatter.ISO_DATE);
+		LocalDate birthDate;
+		try {
+			birthDate = LocalDate.parse(String.valueOf(localYear).substring(0, 2) + String.format("%02d",year) + "-"
+					+ String.format("%02d", month) + "-" + String.format("%02d", day), DateTimeFormatter.ISO_DATE);
+		} catch (Exception ex) {
+			logger.error("Error parsing date");
+			return NationalIdentifierValidationDTO.fail();
+		}
 
 		if (birthDate.compareTo(LocalDate.now()) >= 0) {
 			birthDate = birthDate.minus(100, ChronoUnit.YEARS);
@@ -95,13 +104,12 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		if (!nationalIdentifier.substring(11, 15).matches("[A-Z]" + digitOmocodiaLettersRegEx + "{3}")) {
 			return NationalIdentifierValidationDTO.fail();
 		}
-		
+
 		List<City> birthCities = cityRepository.findByCadastralCode(nationalIdentifier.substring(11, 15));
-		
+
 		if (birthCities.isEmpty()) {
 			return NationalIdentifierValidationDTO.fail();
 		}
-		
 
 		Character checkDigit = nationalIdentifier.charAt(15);
 
@@ -128,7 +136,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		if (!Constants.valueCheckDigitMap.get(total % 26).equals(checkDigit)) {
 			return NationalIdentifierValidationDTO.fail();
 		}
-				
+
 		NationalIdentifierDataDTO data = new NationalIdentifierDataDTO();
 		data.setBirthDate(birthDate);
 		data.setMale(male);
@@ -138,25 +146,27 @@ public class NationalIdentifierService implements INationalIdentifierService {
 	}
 
 	@Override
-	public String calculateNationalIdentifier(CalculateNationalIdentifierInputDTO input) throws UnprocessableEntityException {
+	public String calculateNationalIdentifier(CalculateNationalIdentifierInputDTO input)
+			throws UnprocessableEntityException {
 
 		String nationalIdentifier = "";
 
 		nationalIdentifier += formatLastName(input.getLastName().toUpperCase());
 		nationalIdentifier += formatFirstName(input.getFirstName().toUpperCase());
 		nationalIdentifier += String.valueOf(input.getBirthDate().getYear()).substring(2);
-		nationalIdentifier += Constants.letterMonthMap.entrySet().stream().filter(x -> x.getValue() == input.getBirthDate().getMonthValue())
-				.map(Entry::getKey).findFirst().get();
-		nationalIdentifier += input.getBirthDate().getDayOfMonth() + (input.isMale() ? 0 : 30);
-		
+		nationalIdentifier += Constants.letterMonthMap.entrySet().stream()
+				.filter(x -> x.getValue() == input.getBirthDate().getMonthValue()).map(Entry::getKey).findFirst().get();
+		nationalIdentifier += String.format("%02d", input.getBirthDate().getDayOfMonth() + (input.isMale() ? 0 : 30));
+
 		List<City> cities = cityRepository.findByName(input.getBirthCity());
-		
+
 		if (!cities.isEmpty()) {
 			nationalIdentifier += cities.get(0).getCadastralCode().toUpperCase();
 		} else {
+			logger.error("City with cadastralCode:" + input.getBirthCity() + " not found");
 			throw new UnprocessableEntityException("City not found");
 		}
-		
+
 		int total = 0;
 		for (int i = 0; i < nationalIdentifier.length(); i++) {
 			Character symbol = nationalIdentifier.charAt(i);
@@ -238,6 +248,5 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		}
 		return symbol;
 	}
-
 
 }

@@ -3,9 +3,6 @@ package com.vodafone.api.exceptions;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import java.time.LocalDate;
-
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.vodafone.api.controllers.NationalIdentifierController;
-import com.vodafone.api.dtos.CalculateNationalIdentifierInputDTO;
 import com.vodafone.api.services.INationalIdentifierService;
 
 @SpringBootTest
