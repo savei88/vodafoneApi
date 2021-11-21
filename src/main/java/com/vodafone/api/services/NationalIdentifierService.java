@@ -81,9 +81,9 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		}
 
 		boolean male = true;
-		if (day >= 40) {
+		if (day > 40) {
 			male = false;
-			day -= 30;
+			day -= 40;
 		}
 
 		int localYear = LocalDate.now().getYear();
@@ -158,7 +158,7 @@ public class NationalIdentifierService implements INationalIdentifierService {
 		nationalIdentifier += String.valueOf(input.getBirthDate().getYear()).substring(2);
 		nationalIdentifier += Constants.letterMonthMap.entrySet().stream()
 				.filter(x -> x.getValue() == input.getBirthDate().getMonthValue()).map(Entry::getKey).findFirst().get();
-		nationalIdentifier += String.format("%02d", input.getBirthDate().getDayOfMonth() + (input.isMale() ? 0 : 30));
+		nationalIdentifier += String.format("%02d", input.getBirthDate().getDayOfMonth() + (input.isMale() ? 0 : 40));
 
 		List<City> cities = cityRepository.findByNameAndProvince(input.getBirthCity(), input.getProvince());
 

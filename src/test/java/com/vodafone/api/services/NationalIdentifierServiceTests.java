@@ -28,7 +28,8 @@ import com.vodafone.api.repositories.CityRepository;
 @SpringBootTest
 public class NationalIdentifierServiceTests {
 
-	private static String rightNationalIdentifier = "PRVPRV80A01H501K";
+	private static String rightMaleNationalIdentifier = "PRVPRV80A01H501K";
+	private static String rightFemaleNationalIdentifier = "PRVPRV80A41F205R";
 
 	@Mock
 	private CityRepository cityRepository;
@@ -82,16 +83,16 @@ public class NationalIdentifierServiceTests {
 	@Test
 	void checkNationalIdentifierWhenCityNotFoundReturnFalse() {
 		Mockito.when(cityRepository.findByCadastralCode("H501")).thenReturn(new ArrayList<>());
-		assertEquals(false, nationalIdentifierService.checkNationalIdentifier(rightNationalIdentifier).isValid());
+		assertEquals(false, nationalIdentifierService.checkNationalIdentifier(rightMaleNationalIdentifier).isValid());
 	}
 	
 	@Test
-	void checkNationalIdentifierWhenRightReturnValidData() {
+	void checkMaleNationalIdentifierWhenRightReturnValidData() {
 		City city = new City("XXX","ROMA", "RM", "H501");
 		CityDTO dto = new CityDTO(city.getName(), city.getProvince(), city.getCadastralCode());
 		Mockito.when(cityRepository.findByCadastralCode("H501")).thenReturn(Arrays.asList(city));
 		Mockito.when(cityMapper.entityToDTO(city)).thenReturn(dto);
-		NationalIdentifierValidationDTO result = nationalIdentifierService.checkNationalIdentifier(rightNationalIdentifier);
+		NationalIdentifierValidationDTO result = nationalIdentifierService.checkNationalIdentifier(rightMaleNationalIdentifier);
 		assertEquals(true, result.isValid());
 		assertEquals(dto, result.getData().getBirthCity());
 		assertEquals(true, result.getData().isMale());
@@ -99,7 +100,20 @@ public class NationalIdentifierServiceTests {
 	}
 	
 	@Test
-	void calculateNationalIdentifierWhenCityRightReturnValidData() {
+	void checkFemaleNationalIdentifierWhenRightReturnValidData() {
+		City city = new City("XXX","MILANO", "MI", "F205");
+		CityDTO dto = new CityDTO(city.getName(), city.getProvince(), city.getCadastralCode());
+		Mockito.when(cityRepository.findByCadastralCode("F205")).thenReturn(Arrays.asList(city));
+		Mockito.when(cityMapper.entityToDTO(city)).thenReturn(dto);
+		NationalIdentifierValidationDTO result = nationalIdentifierService.checkNationalIdentifier(rightFemaleNationalIdentifier);
+		assertEquals(true, result.isValid());
+		assertEquals(dto, result.getData().getBirthCity());
+		assertEquals(false, result.getData().isMale());
+		assertEquals("1980-01-01", result.getData().getBirthDate().toString());
+	}
+	
+	@Test
+	void calculateMaleNationalIdentifierWhenCityRightReturnValidData() {
 		City city = new City("XXX","ROMA", "RM", "H501");
 		CityDTO dto = new CityDTO(city.getName(), city.getProvince(), city.getCadastralCode());
 		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RM")).thenReturn(Arrays.asList(city));
@@ -107,12 +121,23 @@ public class NationalIdentifierServiceTests {
 		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
 				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RM");
 		String result = nationalIdentifierService.calculateNationalIdentifier(input);
-		assertEquals(rightNationalIdentifier, result);
+		assertEquals(rightMaleNationalIdentifier, result);
+	}
+	
+	@Test
+	void calculateFemaleNationalIdentifierWhenCityRightReturnValidData() {
+		City city = new City("XXX","MILANO", "MI", "F205");
+		CityDTO dto = new CityDTO(city.getName(), city.getProvince(), city.getCadastralCode());
+		Mockito.when(cityRepository.findByNameAndProvince("Milano", "MI")).thenReturn(Arrays.asList(city));
+		Mockito.when(cityMapper.entityToDTO(city)).thenReturn(dto);
+		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
+				"PROVA", "PROVA", false, LocalDate.parse("1980-01-01"), "Milano", "MI");
+		String result = nationalIdentifierService.calculateNationalIdentifier(input);
+		assertEquals(rightFemaleNationalIdentifier, result);
 	}
 	
 	@Test
 	void calculateNationalIdentifierWhenCityWrongThrowsException() {
-		
 		Mockito.when(cityRepository.findByNameAndProvince("Roma", "RM")).thenReturn(Arrays.asList());
 		CalculateNationalIdentifierInputDTO input = new CalculateNationalIdentifierInputDTO(
 				"PROVA", "PROVA", true, LocalDate.parse("1980-01-01"), "Roma", "RM");
